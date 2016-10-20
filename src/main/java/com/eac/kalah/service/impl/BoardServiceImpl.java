@@ -68,9 +68,7 @@ public class BoardServiceImpl implements BoardService {
     public Board move(String boardId, PitEnum pitId) {
         Board board = findById(boardId);
 
-        if (board.getWinner() != null) {
-            throw new BusinessException("This game has already a winner - " + board.getWinner().getDescription());
-        }
+        this.validateMatch(board);
 
         Player currentPlayer = getCurrentPlayer(board);
         List<Pit> pits = currentPlayer.getPits();
@@ -78,9 +76,7 @@ public class BoardServiceImpl implements BoardService {
         int stones = currentPit.getStones();
         int position = currentPit.getId().getPosition() + ONE;
 
-        if (currentPit.getStones() == ZERO) {
-            throw new BusinessException("The pit " + pitId + " is already empty, try another pit");
-        }
+        this.validatePit(pitId, currentPit);
 
         currentPit.setStones(ZERO);
 
@@ -103,14 +99,11 @@ public class BoardServiceImpl implements BoardService {
             if (stones > ZERO) {
                 Pit pit = player.getPits().get(i);
                 pit.setStones(pit.getStones() + ONE);
-
                 stones--;
 
                 if (pit.getStones() == ONE && stones == ZERO) {
                     this.emptyHouse(board, currentPlayer, pit.getId().getPosition());
                 }
-            } else {
-                return stones;
             }
         }
 
@@ -192,6 +185,18 @@ public class BoardServiceImpl implements BoardService {
             House house = board.getPlayerOne().getHouse();
             house.setStones(house.getStones() + stonesPlayerOne);
             board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
+        }
+    }
+
+    private void validateMatch(Board board) {
+        if (board.getWinner() != null) {
+            throw new BusinessException("This game has already a winner - " + board.getWinner().getDescription());
+        }
+    }
+
+    private void validatePit(PitEnum pitId, Pit currentPit) {
+        if (currentPit.getStones() == ZERO) {
+            throw new BusinessException("The pit " + pitId + " is already empty, try another pit");
         }
     }
 
