@@ -4,12 +4,12 @@ package com.eac.kalah.model.entity.enums;
  * Created by eduardo on 19/10/16.
  */
 public enum PitEnum {
-    PIT_1(1),
-    PIT_2(2),
-    PIT_3(3),
-    PIT_4(4),
-    PIT_5(5),
-    PIT_6(6);
+    ONE(0),
+    TWO(1),
+    THREE(2),
+    FOUR(3),
+    FIVE(4),
+    SIX(5);
 
     private int position;
 
@@ -32,5 +32,4 @@ public enum PitEnum {
 
         return null;
     }
-
 }
