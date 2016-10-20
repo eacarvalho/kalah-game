@@ -37,6 +37,11 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public Board move(String boardId, PitEnum pitId) {
         Board board = findById(boardId);
+
+        if (board.getWinner() != null) {
+            // TODO Lançar exceção de jogo já finalizado
+        }
+
         Player currentPlayer = getCurrentPlayer(board);
         List<Pit> pits = currentPlayer.getPits();
         Pit currentPit = pits.get(pitId.getPosition());
@@ -50,13 +55,16 @@ public class BoardServiceImpl implements BoardService {
             position = 0;
         }
 
-        log.info("Player One: " + board);
+        this.verifyWinner(board);
 
         return board;
     }
 
     @Override
     public Board findById(String id) {
+
+        // TODO Lançar exceção se não encontrar o Id
+
         return repository.findById(id);
     }
 
@@ -89,6 +97,25 @@ public class BoardServiceImpl implements BoardService {
         }
 
         return stones;
+    }
+
+    private void verifyWinner(Board board) {
+        int stonesPlayerOne = board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum();
+        int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
+
+        if (stonesPlayerOne == 0) {
+            board.setWinner(PlayerEnum.ONE);
+
+            House house = board.getPlayerTwo().getHouse();
+            house.setStones(house.getStones() + stonesPlayerTwo);
+            board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(0));
+        } else if (stonesPlayerTwo == 0) {
+            board.setWinner(PlayerEnum.TWO);
+
+            House house = board.getPlayerOne().getHouse();
+            house.setStones(house.getStones() + stonesPlayerOne);
+            board.getPlayerOne().getPits().forEach(pit -> pit.setStones(0));
+        }
     }
 
     private Player getCurrentPlayer(final Board board) {
