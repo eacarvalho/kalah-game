@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.eac.kalah.exceptions.BusinessException;
+import com.eac.kalah.exceptions.ResourceNotFoundException;
 import com.eac.kalah.model.entity.Board;
 import com.eac.kalah.model.entity.House;
 import com.eac.kalah.model.entity.Pit;
@@ -39,7 +41,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = findById(boardId);
 
         if (board.getWinner() != null) {
-            // TODO Lançar exceção de jogo já finalizado
+            throw new BusinessException("This game has already a winner - " + board.getWinner().getDescription());
         }
 
         Player currentPlayer = getCurrentPlayer(board);
@@ -62,10 +64,13 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board findById(String id) {
+        Board board = repository.findById(id);
 
-        // TODO Lançar exceção se não encontrar o Id
+        if (board == null) {
+            throw new ResourceNotFoundException("There is no board with the given id - " + id);
+        }
 
-        return repository.findById(id);
+        return board;
     }
 
     private int moveStones(int position, int stones, Board board, PlayerEnum currentPlayer) {
