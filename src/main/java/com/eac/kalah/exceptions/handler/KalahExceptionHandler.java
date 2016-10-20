@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @ControllerAdvice
-public class MovieExceptionHandler {
+public class KalahExceptionHandler {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json; charset=utf-8";
@@ -58,8 +58,8 @@ public class MovieExceptionHandler {
 
     @ExceptionHandler(ListNotFoundException.class)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public HttpEntity<MessageError> handlerListNotFoundException(ListNotFoundException ex) {
-        log.error("No Content: {}", ExceptionUtils.getMessage(ex));
+    public HttpEntity<MessageError> handlerListNotFoundException(final ListNotFoundException ex) {
+        log.error("List Not Found: {}", ExceptionUtils.getMessage(ex));
         return this.getMessageErrorHttpEntity(ex, HttpStatus.NO_CONTENT);
     }
 
@@ -70,10 +70,10 @@ public class MovieExceptionHandler {
         return this.getMessageErrorHttpEntity(ex, HttpStatus.NOT_FOUND);
     }
 
-    private HttpEntity<MessageError> getMessageErrorHttpEntity(KalahException ex, HttpStatus noContent) {
+    private HttpEntity<MessageError> getMessageErrorHttpEntity(KalahException ex, HttpStatus httpStatus) {
         MessageError messageError = new MessageError(ExceptionUtils.getMessage(ex));
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.add(CONTENT_TYPE, APPLICATION_JSON_CHARSET_UTF_8);
-        return new ResponseEntity<>(messageError, responseHeaders, noContent);
+        return new ResponseEntity<>(messageError, responseHeaders, httpStatus);
     }
 }

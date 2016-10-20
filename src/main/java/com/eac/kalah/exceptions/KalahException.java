@@ -14,8 +14,4 @@ public class KalahException extends RuntimeException {
     public KalahException(Throwable cause) {
         super(cause);
     }
-
-    public KalahException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }

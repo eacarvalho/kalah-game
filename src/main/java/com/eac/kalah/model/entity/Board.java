@@ -1,11 +1,10 @@
 package com.eac.kalah.model.entity;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
 import com.eac.kalah.model.entity.enums.PlayerEnum;
-import lombok.Data;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,11 +30,11 @@ public class Board {
     @Getter
     private PlayerEnum winner;
     @Getter
-    private LocalDateTime createdDate;
+    private Date createdDate;
 
     public Board() {
         this.id = UUID.randomUUID().toString();
-        this.createdDate = LocalDateTime.now();
+        this.createdDate = new Date();
         this.currentPlayer = PlayerEnum.ONE;
     }
 }

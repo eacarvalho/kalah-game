@@ -4,6 +4,7 @@ import com.eac.kalah.model.entity.Board;
 import com.eac.kalah.model.repository.BoardRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,5 +25,10 @@ public class BoardRepositoryImpl implements BoardRepository {
     @Override
     public Board findById(String id) {
         return boards.get(id);
+    }
+
+    @Override
+    public Collection<Board> findAll() {
+        return boards.values();
     }
 }

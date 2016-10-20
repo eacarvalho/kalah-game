@@ -1,5 +1,7 @@
 package com.eac.kalah.model.repository;
 
+import java.util.Collection;
+
 import com.eac.kalah.model.entity.Board;
 
 /**
@@ -9,4 +11,5 @@ public interface BoardRepository {
 
     Board save(Board board);
     Board findById(String id);
+    Collection<Board> findAll();
 }

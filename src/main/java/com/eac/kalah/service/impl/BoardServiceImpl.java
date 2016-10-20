@@ -1,11 +1,13 @@
 package com.eac.kalah.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.eac.kalah.exceptions.BusinessException;
+import com.eac.kalah.exceptions.ListNotFoundException;
 import com.eac.kalah.exceptions.ResourceNotFoundException;
 import com.eac.kalah.model.entity.Board;
 import com.eac.kalah.model.entity.House;
@@ -25,6 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BoardServiceImpl implements BoardService {
 
+    private static final int ZERO = 0;
+    private static final int ONE = 1;
+    private static final int NUMBER_OF_PIT = 6;
+
     @Autowired
     private BoardRepository repository;
 
@@ -34,6 +40,28 @@ public class BoardServiceImpl implements BoardService {
         board.setPlayerOne(new Player(PlayerEnum.ONE));
         board.setPlayerTwo(new Player(PlayerEnum.TWO));
         return repository.save(board);
+    }
+
+    @Override
+    public Board findById(String id) {
+        Board board = repository.findById(id);
+
+        if (board == null) {
+            throw new ResourceNotFoundException("There is no board with the given id - " + id);
+        }
+
+        return board;
+    }
+
+    @Override
+    public Collection<Board> findAll() {
+        Collection<Board> boards = repository.findAll();
+
+        if (boards == null || boards.size() == ZERO) {
+            throw new ListNotFoundException("There is no board yet, first create one");
+        }
+
+        return boards;
     }
 
     @Override
@@ -48,27 +76,20 @@ public class BoardServiceImpl implements BoardService {
         List<Pit> pits = currentPlayer.getPits();
         Pit currentPit = pits.get(pitId.getPosition());
         int stones = currentPit.getStones();
-        int position = currentPit.getId().getPosition() + 1;
+        int position = currentPit.getId().getPosition() + ONE;
 
-        currentPit.setStones(0);
+        if (currentPit.getStones() == ZERO) {
+            throw new BusinessException("The pit " + pitId + " is already empty, try another pit");
+        }
 
-        while (stones > 0) {
+        currentPit.setStones(ZERO);
+
+        while (stones > ZERO) {
             stones = moveStones(position, stones, board, currentPlayer.getId());
-            position = 0;
+            position = ZERO;
         }
 
         this.verifyWinner(board);
-
-        return board;
-    }
-
-    @Override
-    public Board findById(String id) {
-        Board board = repository.findById(id);
-
-        if (board == null) {
-            throw new ResourceNotFoundException("There is no board with the given id - " + id);
-        }
 
         return board;
     }
@@ -78,48 +99,99 @@ public class BoardServiceImpl implements BoardService {
 
         board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer));
 
-        for (int i = position; i < 6; i++) {
-            if (stones > 0) {
+        for (int i = position; i < NUMBER_OF_PIT; i++) {
+            if (stones > ZERO) {
                 Pit pit = player.getPits().get(i);
-                pit.setStones(pit.getStones() + 1);
-
-                // TODO Colocar a regra das pedras quando a stone estiver zero
+                pit.setStones(pit.getStones() + ONE);
 
                 stones--;
+
+                if (pit.getStones() == ONE && stones == ZERO) {
+                    this.emptyHouse(board, currentPlayer, pit.getId().getPosition());
+                }
             } else {
                 return stones;
             }
         }
 
-        if (stones > 0) {
+        if (stones > ZERO) {
             House house = player.getHouse();
-            house.setStones(house.getStones() + 1);
+            house.setStones(house.getStones() + ONE);
             stones--;
 
-            if (stones == 0 && player.getId() == currentPlayer) {
-                board.setCurrentPlayer(currentPlayer);
+            if (stones == ZERO && player.getId() == currentPlayer) {
+                this.extraMove(board, currentPlayer);
             }
         }
 
         return stones;
     }
 
+    /**
+     * The last seed falls in the store, so the player receives an extra move.
+     *
+     * @param board
+     * @param currentPlayer
+     */
+    private void extraMove(Board board, PlayerEnum currentPlayer) {
+        log.info("Extra move - " + currentPlayer.getDescription());
+
+        board.setCurrentPlayer(currentPlayer);
+    }
+
+    /**
+     * The last seed falls in an empty house on the player's side. The player collects the highlighted seeds from both
+     * his house and the opposite house of his opponent and will move them to his store. The player's turn ends.
+     *
+     * @param board
+     * @param currentPlayer
+     * @param position
+     */
+    private void emptyHouse(Board board, PlayerEnum currentPlayer, int position) {
+        log.info("Empty house - " + currentPlayer.getDescription());
+
+        Player player = null;
+
+        if (currentPlayer == PlayerEnum.ONE) {
+            player = board.getPlayerTwo();
+        } else {
+            player = board.getPlayerOne();
+        }
+
+        int stones = player.getPits().get(position).getStones();
+        House house = player.getHouse();
+
+        player.getPits().get(position).setStones(ZERO);
+
+        house.setStones(house.getStones() + stones + ONE);
+    }
+
+    /**
+     * When one player no longer has any seeds in any of their houses, the game ends. The other player moves all
+     * remaining seeds to their store, and the player with the most seeds in their store wins.
+     *
+     * @param board
+     */
     private void verifyWinner(Board board) {
         int stonesPlayerOne = board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum();
         int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
 
-        if (stonesPlayerOne == 0) {
+        if (stonesPlayerOne == ZERO) {
+            log.info("Winner - " + PlayerEnum.ONE.getDescription());
+
             board.setWinner(PlayerEnum.ONE);
 
             House house = board.getPlayerTwo().getHouse();
             house.setStones(house.getStones() + stonesPlayerTwo);
-            board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(0));
-        } else if (stonesPlayerTwo == 0) {
+            board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(ZERO));
+        } else if (stonesPlayerTwo == ZERO) {
+            log.info("Winner - " + PlayerEnum.TWO.getDescription());
+
             board.setWinner(PlayerEnum.TWO);
 
             House house = board.getPlayerOne().getHouse();
             house.setStones(house.getStones() + stonesPlayerOne);
-            board.getPlayerOne().getPits().forEach(pit -> pit.setStones(0));
+            board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
         }
     }
 

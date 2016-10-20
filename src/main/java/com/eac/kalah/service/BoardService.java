@@ -1,5 +1,7 @@
 package com.eac.kalah.service;
 
+import java.util.Collection;
+
 import com.eac.kalah.model.entity.Board;
 import com.eac.kalah.model.entity.enums.PitEnum;
 
@@ -9,6 +11,7 @@ import com.eac.kalah.model.entity.enums.PitEnum;
 public interface BoardService {
 
     Board create();
-    Board move(String boardId, PitEnum pitId);
     Board findById(String id);
+    Collection<Board> findAll();
+    Board move(String boardId, PitEnum pitId);
 }
