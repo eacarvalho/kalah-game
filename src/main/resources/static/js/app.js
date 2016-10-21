@@ -5,6 +5,8 @@ app.config(function($routeProvider){
       templateUrl: '/views/boards.html',
       controller: 'BoardCtrl',
       controllerAs: 'ctrl'
+    }).when('/',{
+      templateUrl: '/views/home.html'
     })
     .otherwise(
     { redirectTo: '/'}

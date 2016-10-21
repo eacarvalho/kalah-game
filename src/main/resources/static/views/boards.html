@@ -1,52 +1,50 @@
-<section class="lists">
+<div class="row">
+  <div class="col-md-12">
+    <h2>Kalah Game</h2>
+    <p>Have fun playing Kalah Game.</p>
+  </div>
+</div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h3>Kalah Game</h3>
+<br/>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="col-md-1">
+      <button type="button" class="btn btn-success btn-lg btn-block">
+        <span class="badge">{{ctrl.board.playerOne.house.stones}}</span>
+      </button>
+    </div>
+    <div class="col-md-1" ng-repeat="pit in ctrl.board.playerOne.pits | orderBy:'':true">
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="ctrl.move(pit.id)"
+              ng-disabled="ctrl.disabled(ctrl.board.playerOne, pit.stones)">
+        <span class="badge">{{pit.stones}}</span>
+      </button>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+
+<br/>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="col-md-1"></div>
+    <div class="col-md-1" ng-repeat="pit in ctrl.board.playerTwo.pits">
+      <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="ctrl.move(pit.id)"
+              ng-disabled="ctrl.disabled(ctrl.board.playerTwo, pit.stones)">
+        <span class="badge">{{pit.stones}}</span>
+      </button>
+    </div>
+    <div class="col-md-1">
+      <button type="button" class="btn btn-success btn-lg btn-block">
+        <span class="badge">{{ctrl.board.playerTwo.house.stones}}</span>
+      </button>
     </div>
   </div>
+</div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <div class="col-md-8">
-        <div class="col-md-1">
-          <button type="button" class="btn btn-success btn-lg btn-block" >
-            <span class="badge">{{ctrl.board.playerOne.house.stones}}</span>
-          </button>
-        </div>
-        <div class="col-md-1" ng-repeat="pit in ctrl.board.playerOne.pits | orderBy:'':true">
-          <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="ctrl.move(pit.id)" ng-disabled="ctrl.disabled(ctrl.board.playerOne, pit.stones)">
-            <span class="badge">{{pit.stones}}</span>
-          </button>
-        </div>
-        <div class="col-md-1"></div>
-      </div>
-    </div>
+<div class="row" ng-show="ctrl.board.winner !== null">
+  <div class="col-md-12">
+    The winner is {{ctrl.board.winner}}
   </div>
-
-  <br/>
-
-  <div class="row">
-    <div class="col-md-12">
-      <div class="col-md-8">
-        <div class="col-md-1"></div>
-        <div class="col-md-1" ng-repeat="pit in ctrl.board.playerTwo.pits">
-          <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="ctrl.move(pit.id)" ng-disabled="ctrl.disabled(ctrl.board.playerTwo, pit.stones)">
-            <span class="badge">{{pit.stones}}</span>
-          </button>
-        </div>
-        <div class="col-md-1">
-          <button type="button" class="btn btn-success btn-lg btn-block" >
-            <span class="badge">{{ctrl.board.playerTwo.house.stones}}</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row" ng-show="ctrl.board.winner !== null">
-    <div class="col-md-12">
-      The winner is {{ctrl.board.winner}}
-    </div>
-  </div>
-</section>
+</div>

@@ -13,41 +13,55 @@
   <title>Kalah Game</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/webjars/bootstrap/3.3.6/css/bootstrap.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap-theme.min.css"/>
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
 
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1"
-              aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Kalah</a>
-    </div>
+<div class="container">
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home <span class="sr-only">(current)</span></a></li>
-        <li><a href="#/boards">New Game</a></li>
-      </ul>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Kalah Game</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#/boards">Game</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
+
+  <!-- Main component for a primary marketing message or call to action -->
+  <div class="jumbotron">
+    <!--<h1>Navbar example</h1>-->
+
+    <!--<p>This example is a quick exercise to illustrate how the default, static navbar and fixed to top navbar work. It-->
+      <!--includes the responsive CSS and HTML, so it also adapts to your viewport and device.</p>-->
+
+    <!--<p>-->
+      <!--<a class="btn btn-lg btn-primary" href="../../components/#navbar" role="button">View navbar docs »</a>-->
+    <!--</p>-->
+
+    <div ng-view></div>
   </div>
-</nav>
-<div class="row">
-  <div ng-view></div>
 </div>
 
-<script src="/webjars/angularjs/1.4.9/angular.js"></script>
-<script src="/webjars/angularjs/1.4.9/angular-resource.js"></script>
-<script src="/webjars/angularjs/1.4.9/angular-route.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.9/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.9/angular-resource.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.9/angular-route.min.js"></script>
+
 <script src="js/app.js"></script>
 <script src="js/controller.js"></script>
 
