@@ -1,0 +1,1 @@
+web: java -Dserver.port=$PORT -jar target/kalah-game-1.0.jar
