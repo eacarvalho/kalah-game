@@ -1,11 +1,5 @@
 package com.eac.kalah.service.impl;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.eac.kalah.exceptions.BusinessException;
 import com.eac.kalah.exceptions.ListNotFoundException;
 import com.eac.kalah.exceptions.ResourceNotFoundException;
@@ -17,8 +11,12 @@ import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
 import com.eac.kalah.model.repository.BoardRepository;
 import com.eac.kalah.service.BoardService;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by eduardo on 19/10/16.
@@ -104,6 +102,8 @@ public class BoardServiceImpl implements BoardService {
                 if (pit.getStones() == ONE && stones == ZERO) {
                     this.emptyHouse(board, currentPlayer, pit.getId().getPosition());
                 }
+            } else {
+                break;
             }
         }
 
@@ -140,23 +140,31 @@ public class BoardServiceImpl implements BoardService {
      * @param currentPlayer
      * @param position
      */
+    // TODO Restrição para o mesmo lado do current player
     private void emptyHouse(Board board, PlayerEnum currentPlayer, int position) {
         log.info("Empty house - " + currentPlayer.getDescription());
 
         Player player = null;
+        int stones = 0;
+        int oppositePosition = (NUMBER_OF_PIT - ONE) - position;
 
         if (currentPlayer == PlayerEnum.ONE) {
-            player = board.getPlayerTwo();
-        } else {
+            List<Pit> pitsPlayerTwo = board.getPlayerTwo().getPits();
+
             player = board.getPlayerOne();
+            stones = pitsPlayerTwo.get(oppositePosition).getStones();
+            pitsPlayerTwo.get(oppositePosition).setStones(ZERO);
+        } else {
+            List<Pit> pitsPlayerOne = board.getPlayerOne().getPits();
+
+            player = board.getPlayerTwo();
+            stones = pitsPlayerOne.get(oppositePosition).getStones();
+            pitsPlayerOne.get(oppositePosition).setStones(ZERO);
         }
 
-        int stones = player.getPits().get(position).getStones();
         House house = player.getHouse();
-
-        player.getPits().get(position).setStones(ZERO);
-
         house.setStones(house.getStones() + stones + ONE);
+        player.getPits().get(position).setStones(ZERO);
     }
 
     /**
@@ -170,21 +178,19 @@ public class BoardServiceImpl implements BoardService {
         int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
 
         if (stonesPlayerOne == ZERO) {
-            log.info("Winner - " + PlayerEnum.ONE.getDescription());
-
-            board.setWinner(PlayerEnum.ONE);
-
             House house = board.getPlayerTwo().getHouse();
             house.setStones(house.getStones() + stonesPlayerTwo);
             board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(ZERO));
+
+            board.setWinner(house.getStones() >= board.getPlayerOne().getHouse().getStones() ? PlayerEnum.TWO : PlayerEnum.ONE);
+            log.info("Winner - " + board.getWinner().getDescription());
         } else if (stonesPlayerTwo == ZERO) {
-            log.info("Winner - " + PlayerEnum.TWO.getDescription());
-
-            board.setWinner(PlayerEnum.TWO);
-
             House house = board.getPlayerOne().getHouse();
             house.setStones(house.getStones() + stonesPlayerOne);
             board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
+
+            board.setWinner(house.getStones() >= board.getPlayerTwo().getHouse().getStones() ? PlayerEnum.ONE : PlayerEnum.TWO);
+            log.info("Winner - " + board.getWinner().getDescription());
         }
     }
 
