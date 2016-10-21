@@ -13,6 +13,12 @@ h4 {
   text-align: center;
 }
 
+.rulewiki {
+  background-color: rgba(255, 255, 255, .30);
+  border-radius: 15px;
+  padding: 7px 0;
+}
+
 .glyphicon-star {
   vertical-align: bottom;
 }
