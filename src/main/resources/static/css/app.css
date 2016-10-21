@@ -1,14 +1,80 @@
 body {
-    padding-top: 20px;
-    padding-left: 20px;
-    padding-bottom: 20px;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-bottom: 20px;
+  background-image: url('https://forum.boardgamearena.com/styles/prosilver/theme/images/bga/back-main.jpg');
+}
+
+hr {
+  border-top-color: rgba(255, 255, 255, .50);
+}
+
+h4 {
+  text-align: center;
+}
+
+.glyphicon-star {
+  vertical-align: bottom;
 }
 
 .navbar {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .section {
-    margin-left: 10%;
-    float: left;
+  margin-left: 10%;
+  float: left;
+}
+
+.board {
+  height: 150px;
+}
+
+.house {
+  height: 100%;
+}
+
+.house > .btn {
+  margin-top: 15%;
+  height: 70%;
+  background-color: rgba(0, 0, 0, .30);
+}
+
+.house > .btn > .badge {
+  font-size: 33px;
+  padding: 8px 16px;
+  border-radius: 30px;
+}
+
+.pits {
+  text-align: center;
+}
+
+.btn {
+  background-color: rgba(0, 0, 0, .15);
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, .5);
+  border-radius: 30px;
+}
+
+.badge {
+  font-size: 18px;
+  background-color: #000000;
+  padding: 4px 8px;
+  border-radius: 15px;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.h-50 {
+  height: 50%;
+}
+
+.m-b-5 {
+  margin-bottom: 8px;
+}
+
+.separator {
+  margin-bottom: 10px;
 }
