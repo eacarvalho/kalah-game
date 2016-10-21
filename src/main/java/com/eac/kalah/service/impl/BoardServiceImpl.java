@@ -29,7 +29,7 @@ public class BoardServiceImpl implements BoardService {
 
     private static final int ZERO = 0;
     private static final int ONE = 1;
-    private static final int NUMBER_OF_PIT = 6;
+    private static final int MAX_OF_PIT = 6;
 
     @Autowired
     private BoardRepository repository;
@@ -85,7 +85,7 @@ public class BoardServiceImpl implements BoardService {
             position = ZERO;
         }
 
-        this.verifyWinner(board);
+        this.verifyWinnerRule(board);
 
         return board;
     }
@@ -95,15 +95,17 @@ public class BoardServiceImpl implements BoardService {
 
         board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer));
 
-        for (int i = position; i < NUMBER_OF_PIT; i++) {
+        for (int pitId = position; pitId < MAX_OF_PIT; pitId++) {
             if (stones > ZERO) {
-                Pit pit = player.getPits().get(i);
+                Pit pit = player.getPits().get(pitId);
                 pit.setStones(pit.getStones() + ONE);
                 stones--;
 
-                if (pit.getStones() == ONE && stones == ZERO) {
-                    this.emptyHouse(board, currentPlayer, pit.getId().getPosition());
+                if (this.isAnEmptyHouse(stones, currentPlayer, player, pit)) {
+                    this.emptyHouseRule(board, currentPlayer, pit.getId().getPosition());
                 }
+            } else {
+                break;
             }
         }
 
@@ -112,8 +114,8 @@ public class BoardServiceImpl implements BoardService {
             house.setStones(house.getStones() + ONE);
             stones--;
 
-            if (stones == ZERO && player.getId() == currentPlayer) {
-                this.extraMove(board, currentPlayer);
+            if (this.isAnExtraMove(stones, currentPlayer, player)) {
+                this.extraMoveRule(board, currentPlayer);
             }
         }
 
@@ -126,9 +128,8 @@ public class BoardServiceImpl implements BoardService {
      * @param board
      * @param currentPlayer
      */
-    private void extraMove(Board board, PlayerEnum currentPlayer) {
+    private void extraMoveRule(Board board, PlayerEnum currentPlayer) {
         log.info("Extra move - " + currentPlayer.getDescription());
-
         board.setCurrentPlayer(currentPlayer);
     }
 
@@ -140,23 +141,30 @@ public class BoardServiceImpl implements BoardService {
      * @param currentPlayer
      * @param position
      */
-    private void emptyHouse(Board board, PlayerEnum currentPlayer, int position) {
+    private void emptyHouseRule(Board board, PlayerEnum currentPlayer, int position) {
         log.info("Empty house - " + currentPlayer.getDescription());
 
         Player player = null;
+        int stones = 0;
+        int oppositePosition = (MAX_OF_PIT - ONE) - position;
 
         if (currentPlayer == PlayerEnum.ONE) {
-            player = board.getPlayerTwo();
-        } else {
+            List<Pit> pitsPlayerTwo = board.getPlayerTwo().getPits();
+
             player = board.getPlayerOne();
+            stones = pitsPlayerTwo.get(oppositePosition).getStones();
+            pitsPlayerTwo.get(oppositePosition).setStones(ZERO);
+        } else {
+            List<Pit> pitsPlayerOne = board.getPlayerOne().getPits();
+
+            player = board.getPlayerTwo();
+            stones = pitsPlayerOne.get(oppositePosition).getStones();
+            pitsPlayerOne.get(oppositePosition).setStones(ZERO);
         }
 
-        int stones = player.getPits().get(position).getStones();
         House house = player.getHouse();
-
-        player.getPits().get(position).setStones(ZERO);
-
         house.setStones(house.getStones() + stones + ONE);
+        player.getPits().get(position).setStones(ZERO);
     }
 
     /**
@@ -165,27 +173,41 @@ public class BoardServiceImpl implements BoardService {
      *
      * @param board
      */
-    private void verifyWinner(Board board) {
+    private void verifyWinnerRule(Board board) {
         int stonesPlayerOne = board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum();
         int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
 
         if (stonesPlayerOne == ZERO) {
-            log.info("Winner - " + PlayerEnum.ONE.getDescription());
-
-            board.setWinner(PlayerEnum.ONE);
-
             House house = board.getPlayerTwo().getHouse();
             house.setStones(house.getStones() + stonesPlayerTwo);
             board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(ZERO));
+
+            board.setWinner(house.getStones() >= board.getPlayerOne().getHouse().getStones() ? PlayerEnum.TWO : PlayerEnum.ONE);
+            log.info("Winner - " + board.getWinner().getDescription());
         } else if (stonesPlayerTwo == ZERO) {
-            log.info("Winner - " + PlayerEnum.TWO.getDescription());
-
-            board.setWinner(PlayerEnum.TWO);
-
             House house = board.getPlayerOne().getHouse();
             house.setStones(house.getStones() + stonesPlayerOne);
             board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
+
+            board.setWinner(house.getStones() >= board.getPlayerTwo().getHouse().getStones() ? PlayerEnum.ONE : PlayerEnum.TWO);
+            log.info("Winner - " + board.getWinner().getDescription());
         }
+    }
+
+    private boolean isAnExtraMove(int stones, PlayerEnum currentPlayer, Player player) {
+        return stones == ZERO && player.getId() == currentPlayer;
+    }
+
+    private boolean isAnEmptyHouse(int stones, PlayerEnum currentPlayer, Player player, Pit pit) {
+        return stones == ZERO && player.getId() == currentPlayer && pit.getStones() == ONE;
+    }
+
+    private Player getCurrentPlayer(final Board board) {
+        return board.getCurrentPlayer() == PlayerEnum.ONE ? board.getPlayerOne() : board.getPlayerTwo();
+    }
+
+    private PlayerEnum getOpponentPlayer(final PlayerEnum currentPlayer) {
+        return currentPlayer == PlayerEnum.ONE ? PlayerEnum.TWO : PlayerEnum.ONE;
     }
 
     private void validateMatch(Board board) {
@@ -198,13 +220,5 @@ public class BoardServiceImpl implements BoardService {
         if (currentPit.getStones() == ZERO) {
             throw new BusinessException("The pit " + pitId + " is already empty, try another pit");
         }
-    }
-
-    private Player getCurrentPlayer(final Board board) {
-        return board.getCurrentPlayer() == PlayerEnum.ONE ? board.getPlayerOne() : board.getPlayerTwo();
-    }
-
-    private PlayerEnum getOpponentPlayer(final PlayerEnum currentPlayer) {
-        return currentPlayer == PlayerEnum.ONE ? PlayerEnum.TWO : PlayerEnum.ONE;
     }
 }

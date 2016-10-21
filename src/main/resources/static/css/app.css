@@ -1,0 +1,18 @@
+body {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-left: 10%;
+    float: left;
+}
+
+.page-header {
+    margin: 0 0 10px 0 !important;
+}

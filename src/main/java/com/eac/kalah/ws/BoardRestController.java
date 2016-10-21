@@ -1,4 +1,4 @@
-package com.eac.kalah.ws.v1;
+package com.eac.kalah.ws;
 
 import java.util.Collection;
 
@@ -19,7 +19,7 @@ import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.service.BoardService;
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/api/boards")
 public class BoardRestController {
 
     @Autowired
