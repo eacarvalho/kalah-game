@@ -79,10 +79,14 @@ public class BoardServiceImpl implements BoardService {
         this.validatePit(pitId, currentPit);
 
         currentPit.setStones(ZERO);
+        board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer.getId()));
+
+        PlayerEnum currentPlayerRow = currentPlayer.getId();
 
         while (stones > ZERO) {
-            stones = moveStones(position, stones, board, currentPlayer.getId());
+            stones = moveStones(position, stones, board, currentPlayer.getId(), currentPlayerRow);
             position = ZERO;
+            currentPlayerRow = getOpponentPlayer(currentPlayerRow);
         }
 
         this.verifyWinnerRule(board);
@@ -90,10 +94,8 @@ public class BoardServiceImpl implements BoardService {
         return board;
     }
 
-    private int moveStones(int position, int stones, Board board, PlayerEnum currentPlayer) {
-        Player player = this.getCurrentPlayer(board);
-
-        board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer));
+    private int moveStones(int position, int stones, Board board, PlayerEnum currentPlayer, PlayerEnum currentPlayerRow) {
+        Player player = this.getCurrentPlayer(board, currentPlayerRow);
 
         for (int pitId = position; pitId < MAX_OF_PIT; pitId++) {
             if (stones > ZERO) {
@@ -204,6 +206,10 @@ public class BoardServiceImpl implements BoardService {
 
     private Player getCurrentPlayer(final Board board) {
         return board.getCurrentPlayer() == PlayerEnum.ONE ? board.getPlayerOne() : board.getPlayerTwo();
+    }
+
+    private Player getCurrentPlayer(final Board board, final PlayerEnum playerEnum) {
+        return board.getPlayerOne().getId() == playerEnum ? board.getPlayerOne() : board.getPlayerTwo();
     }
 
     private PlayerEnum getOpponentPlayer(final PlayerEnum currentPlayer) {
