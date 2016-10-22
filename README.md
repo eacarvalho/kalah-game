@@ -58,7 +58,8 @@ How access the Kalah Game API (verbs and status)
 
 - PUT     http://localhost:8080/api/boards/{boardId}/pits/{pitId}
 > Move stones from the selected pit, as all movement are saved, the board has the snapshot of the last movement, so, it knows which player is and how many stones are in each pit and house (Http Status 200). If a pit has zero stone and you try to move the API will return status code 400.
-> The API has 6 spot for pits, so the call possibilities are:
+
+The API has 6 spots, so the call possibilities to move stones are:
 ```
 http://localhost:8080/api/boards/{boardId}/pits/ONE
 http://localhost:8080/api/boards/{boardId}/pits/TWO
