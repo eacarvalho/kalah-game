@@ -1,6 +1,7 @@
 package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PlayerEnum;
+import com.eac.kalah.model.entity.enums.WinnerEnum;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +26,7 @@ public class Board {
     private PlayerEnum currentPlayer;
     @Setter
     @Getter
-    private PlayerEnum winner;
+    private WinnerEnum winner;
     @Getter
     private Date createdDate;
 
