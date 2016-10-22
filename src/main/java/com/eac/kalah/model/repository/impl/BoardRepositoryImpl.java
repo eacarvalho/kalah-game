@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by eduardo on 19/10/16.
@@ -14,7 +16,7 @@ import java.util.Map;
 @Repository
 public class BoardRepositoryImpl implements BoardRepository {
 
-    private static final Map<String, Board> boards = new HashMap<>();
+    private static final Map<String, Board> boards = new ConcurrentHashMap<>();
 
     @Override
     public Board save(Board board) {

@@ -1,11 +1,5 @@
 package com.eac.kalah.service.impl;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.eac.kalah.exceptions.BusinessException;
 import com.eac.kalah.exceptions.ListNotFoundException;
 import com.eac.kalah.exceptions.ResourceNotFoundException;
@@ -17,8 +11,12 @@ import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
 import com.eac.kalah.model.repository.BoardRepository;
 import com.eac.kalah.service.BoardService;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by eduardo on 19/10/16.
@@ -36,9 +34,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board create() {
-        Board board = new Board();
-        board.setPlayerOne(new Player(PlayerEnum.ONE));
-        board.setPlayerTwo(new Player(PlayerEnum.TWO));
+        Player playerOne = new Player(PlayerEnum.ONE);
+        Player playerTwo = new Player(PlayerEnum.TWO);
+        Board board = new Board(playerOne, playerTwo);
         return repository.save(board);
     }
 
