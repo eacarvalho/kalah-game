@@ -1,8 +1,6 @@
 package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PlayerEnum;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,8 +29,7 @@ public class Board {
     @Getter
     private Date createdDate;
 
-    @JsonCreator
-    public Board(@JsonProperty("playerOne") Player playerOne, @JsonProperty("playerTwo") Player playerTwo) {
+    public Board(Player playerOne, Player playerTwo) {
         this.id = UUID.randomUUID().toString();
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;

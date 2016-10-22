@@ -1,8 +1,8 @@
 package com.eac.kalah.model.repository.impl;
 
 import com.eac.kalah.model.entity.Board;
+import com.eac.kalah.model.entity.Player;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
-import com.eac.kalah.util.JsonHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,11 +10,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collection;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
@@ -75,16 +73,12 @@ public class BoardRepositoryImplTest {
         Collection<Board> boards = repository.findAll();
 
         assertNotNull(boards);
-        assertThat(boards.size(), is(1));
+        assertThat(boards.size(), greaterThan(0));
     }
 
     private Board getBoard() throws IOException, URISyntaxException {
-        return new JsonHelper().fromJson(readJson(), Board.class);
-    }
-
-    private String readJson() throws IOException, URISyntaxException {
-        URL invoiceURL = this.getClass().getClassLoader().getResource("json/kalah-new-game.json");
-        byte[] encoded = Files.readAllBytes(Paths.get(invoiceURL.toURI()));
-        return new String(encoded, "UTF-8");
+        Player playerOne = new Player(PlayerEnum.ONE);
+        Player playerTwo = new Player(PlayerEnum.TWO);
+        return new Board(playerOne, playerTwo);
     }
 }

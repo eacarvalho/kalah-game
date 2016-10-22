@@ -2,8 +2,6 @@ package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -22,8 +20,7 @@ public class Player {
     @Getter
     private House house;
 
-    @JsonCreator
-    public Player(@JsonProperty("id") PlayerEnum id) {
+    public Player(PlayerEnum id) {
         this.id = id;
         this.pits = this.initializerPits();
         this.house = new House(0);

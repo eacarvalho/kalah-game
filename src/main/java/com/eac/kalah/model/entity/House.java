@@ -1,7 +1,5 @@
 package com.eac.kalah.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +12,7 @@ public class House {
     @Setter
     private int stones;
 
-    public House(@JsonProperty("stones") int stones) {
+    public House(int stones) {
         this.stones = stones;
     }
 }

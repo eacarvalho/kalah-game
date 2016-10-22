@@ -1,8 +1,6 @@
 package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PitEnum;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,8 +19,7 @@ public class Pit {
     @Getter
     private int stones;
 
-    @JsonCreator
-    public Pit(@JsonProperty("id") PitEnum id) {
+    public Pit(PitEnum id) {
         this.id = id;
         this.stones = INITIAL_STONES;
     }
