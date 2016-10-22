@@ -1,7 +1,6 @@
 package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PitEnum;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

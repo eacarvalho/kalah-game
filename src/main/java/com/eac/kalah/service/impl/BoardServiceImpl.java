@@ -1,11 +1,5 @@
 package com.eac.kalah.service.impl;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.eac.kalah.exceptions.BusinessException;
 import com.eac.kalah.exceptions.ListNotFoundException;
 import com.eac.kalah.exceptions.ResourceNotFoundException;
@@ -15,10 +9,15 @@ import com.eac.kalah.model.entity.Pit;
 import com.eac.kalah.model.entity.Player;
 import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
+import com.eac.kalah.model.entity.enums.WinnerEnum;
 import com.eac.kalah.model.repository.BoardRepository;
 import com.eac.kalah.service.BoardService;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by eduardo on 19/10/16.
@@ -36,9 +35,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board create() {
-        Board board = new Board();
-        board.setPlayerOne(new Player(PlayerEnum.ONE));
-        board.setPlayerTwo(new Player(PlayerEnum.TWO));
+        Player playerOne = new Player(PlayerEnum.ONE);
+        Player playerTwo = new Player(PlayerEnum.TWO);
+        Board board = new Board(playerOne, playerTwo);
         return repository.save(board);
     }
 
@@ -81,12 +80,12 @@ public class BoardServiceImpl implements BoardService {
         currentPit.setStones(ZERO);
         board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer.getId()));
 
-        PlayerEnum currentPlayerRow = currentPlayer.getId();
+        PlayerEnum playerCurrentRow = currentPlayer.getId();
 
         while (stones > ZERO) {
-            stones = moveStones(position, stones, board, currentPlayer.getId(), currentPlayerRow);
+            stones = moveStones(position, stones, board, currentPlayer.getId(), playerCurrentRow);
             position = ZERO;
-            currentPlayerRow = getOpponentPlayer(currentPlayerRow);
+            playerCurrentRow = getOpponentPlayer(playerCurrentRow);
         }
 
         this.verifyWinnerRule(board);
@@ -95,7 +94,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private int moveStones(int position, int stones, Board board, PlayerEnum currentPlayer, PlayerEnum currentPlayerRow) {
-        Player player = this.getCurrentPlayer(board, currentPlayerRow);
+        Player player = this.getCurrentPlayerRow(board, currentPlayerRow);
 
         for (int pitId = position; pitId < MAX_OF_PIT; pitId++) {
             if (stones > ZERO) {
@@ -179,20 +178,25 @@ public class BoardServiceImpl implements BoardService {
         int stonesPlayerOne = board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum();
         int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
 
-        if (stonesPlayerOne == ZERO) {
-            House house = board.getPlayerTwo().getHouse();
-            house.setStones(house.getStones() + stonesPlayerTwo);
+        if (stonesPlayerOne == ZERO || stonesPlayerTwo == ZERO) {
+            board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
             board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(ZERO));
 
-            board.setWinner(house.getStones() >= board.getPlayerOne().getHouse().getStones() ? PlayerEnum.TWO : PlayerEnum.ONE);
-            log.info("Winner - " + board.getWinner().getDescription());
-        } else if (stonesPlayerTwo == ZERO) {
-            House house = board.getPlayerOne().getHouse();
-            house.setStones(house.getStones() + stonesPlayerOne);
-            board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
+            House houseOne = board.getPlayerOne().getHouse();
+            houseOne.setStones(houseOne.getStones() + stonesPlayerOne);
 
-            board.setWinner(house.getStones() >= board.getPlayerTwo().getHouse().getStones() ? PlayerEnum.ONE : PlayerEnum.TWO);
-            log.info("Winner - " + board.getWinner().getDescription());
+            House houseTwo = board.getPlayerTwo().getHouse();
+            houseTwo.setStones(houseTwo.getStones() + stonesPlayerTwo);
+
+            if (houseOne.getStones() > houseTwo.getStones()) {
+                board.setWinner(WinnerEnum.ONE);
+            } else if (houseOne.getStones() < houseTwo.getStones()) {
+                board.setWinner(WinnerEnum.TWO);
+            } else {
+                board.setWinner(WinnerEnum.DRAW);
+            }
+
+            log.info("Winner - " + board.getWinner());
         }
     }
 
@@ -208,7 +212,7 @@ public class BoardServiceImpl implements BoardService {
         return board.getCurrentPlayer() == PlayerEnum.ONE ? board.getPlayerOne() : board.getPlayerTwo();
     }
 
-    private Player getCurrentPlayer(final Board board, final PlayerEnum playerEnum) {
+    private Player getCurrentPlayerRow(final Board board, final PlayerEnum playerEnum) {
         return board.getPlayerOne().getId() == playerEnum ? board.getPlayerOne() : board.getPlayerTwo();
     }
 
@@ -218,7 +222,7 @@ public class BoardServiceImpl implements BoardService {
 
     private void validateMatch(Board board) {
         if (board.getWinner() != null) {
-            throw new BusinessException("This game has already a winner - " + board.getWinner().getDescription());
+            throw new BusinessException("This game has already a winner - " + board.getWinner());
         }
     }
 

@@ -1,16 +1,18 @@
 package com.eac.kalah.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Created by eduardo on 19/10/16.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class House {
 
+    @Getter
+    @Setter
     private int stones;
+
+    public House(int stones) {
+        this.stones = stones;
+    }
 }

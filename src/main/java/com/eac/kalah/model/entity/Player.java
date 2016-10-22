@@ -2,9 +2,7 @@ package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,14 +17,13 @@ public class Player {
     private PlayerEnum id;
     @Getter
     private List<Pit> pits = new LinkedList<>();
-    @Setter
     @Getter
     private House house;
 
     public Player(PlayerEnum id) {
         this.id = id;
         this.pits = this.initializerPits();
-        this.house = new House();
+        this.house = new House(0);
     }
 
     private List<Pit> initializerPits() {
