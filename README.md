@@ -42,7 +42,7 @@ $ java -jar target/kalah-game-1.0.jar
 How access the Kalah Game Web
 ---
 
-http://localhost:8080
+For straightforward fun with a fancy web interface go http://localhost:8080
 
 How access the Kalah Game API (verbs and status)
 ---
