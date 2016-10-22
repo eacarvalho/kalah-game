@@ -1,26 +1,26 @@
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-xs-12">
 		<h2>Kalah Game</h2>
 		<p>Having fun with Kalah Game.</p>
 	</div>
 </div>
 <hr/>
 <div class="row">
-	<div class="col-md-2"><h4 ng-show="ctrl.board.playerOne.id === ctrl.board.currentPlayer">Player one <span class="glyphicon glyphicon-flag"></span></h4></div>
-	<div class="col-md-2 col-md-offset-8"><h4 ng-show="ctrl.board.playerTwo.id === ctrl.board.currentPlayer">Player two  <span class="glyphicon glyphicon-flag"></span></h4></div>
+	<div class="col-xs-2"><h4 ng-show="ctrl.board.playerOne.id === ctrl.board.currentPlayer">Player one <span class="glyphicon glyphicon-flag"></span></h4></div>
+	<div class="col-xs-2 col-xs-offset-8"><h4 ng-show="ctrl.board.playerTwo.id === ctrl.board.currentPlayer">Player two  <span class="glyphicon glyphicon-flag"></span></h4></div>
 </div>
 
 <div class="row board">
-	<div class="col-md-2 house">
+	<div class="col-xs-2 house">
 		<!-- PLAYER ONE HOUSE -->
 		<button type="button" class="btn btn-block">
 			<span class="badge">{{ctrl.board.playerOne.house.stones}}</span>
 		</button>
 	</div>
-	<div class="col-md-8 h-100">
+	<div class="col-xs-8 h-100">
 		<div class="row h-50 m-b-5">
 			<!-- PLAYER ONE PITS -->
-			<div class="col-md-2 h-100 " ng-repeat="pit in ctrl.board.playerOne.pits | orderBy:'':true">
+			<div class="col-xs-2 h-100" ng-repeat="pit in ctrl.board.playerOne.pits | orderBy:'':true">
 				<button type="button" class="h-100 btn btn-lg btn-block" ng-click="ctrl.move(pit.id)"
 				        ng-disabled="ctrl.disabled(ctrl.board.playerOne, pit.stones)">
 					<span class="badge">{{pit.stones}}</span>
@@ -29,7 +29,7 @@
 		</div>
 		<div class="row h-50">
 			<!-- PLAYER TWO PITS -->
-			<div class="col-md-2 h-100" ng-repeat="pit in ctrl.board.playerTwo.pits">
+			<div class="col-xs-2 h-100" ng-repeat="pit in ctrl.board.playerTwo.pits">
 				<button type="button" class=" h-100 btn btn-lg btn-block" ng-click="ctrl.move(pit.id)"
 				        ng-disabled="ctrl.disabled(ctrl.board.playerTwo, pit.stones)">
 					<span class="badge">{{pit.stones}}</span>
@@ -37,7 +37,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-2 house">
+	<div class="col-xs-2 house">
 		<!-- PLAYER TWO HOUSE -->
 		<button type="button" class=" btn btn-block">
 			<span class="badge">{{ctrl.board.playerTwo.house.stones}}</span>
@@ -48,5 +48,5 @@
 <br/><br/>
 
 <div class="row" ng-show="ctrl.board.winner !== null">
-	<div class="col-md-3 col-md-offset-5"><h4>The winner is Player {{ctrl.board.winner}}</h4></div>
+	<div class="col-xs-3 col-xs-offset-5"><h4>The winner is Player {{ctrl.board.winner}}</h4></div>
 </div>
