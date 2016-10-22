@@ -1,6 +1,7 @@
 package com.eac.kalah.model.entity;
 
 import com.eac.kalah.model.entity.enums.PlayerEnum;
+import com.eac.kalah.model.entity.enums.WinnerEnum;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -35,13 +36,13 @@ public class BoardTest {
         Board board = this.createBoard();
 
         board.setCurrentPlayer(PlayerEnum.TWO);
-        board.setWinner(PlayerEnum.TWO);
+        board.setWinner(WinnerEnum.TWO);
 
         assertNotNull(board.getId());
         assertNotNull(board.getPlayerOne());
         assertNotNull(board.getPlayerTwo());
         assertNotNull(board.getCreatedDate());
-        assertThat(board.getWinner(), is(PlayerEnum.TWO));
+        assertThat(board.getWinner(), is(WinnerEnum.TWO));
         assertThat(board.getCurrentPlayer(), is(PlayerEnum.TWO));
     }
 

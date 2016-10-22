@@ -8,6 +8,7 @@ import com.eac.kalah.model.entity.Pit;
 import com.eac.kalah.model.entity.Player;
 import com.eac.kalah.model.entity.enums.PitEnum;
 import com.eac.kalah.model.entity.enums.PlayerEnum;
+import com.eac.kalah.model.entity.enums.WinnerEnum;
 import com.eac.kalah.model.repository.BoardRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -248,7 +249,7 @@ public class BoardServiceImplTest {
 
         Board board = service.move(id, PitEnum.SIX);
 
-        assertThat(board.getWinner(), is(PlayerEnum.ONE));
+        assertThat(board.getWinner(), is(WinnerEnum.ONE));
         assertThat(board.getPlayerOne().getHouse().getStones(), is(41));
         assertThat(board.getPlayerTwo().getHouse().getStones(), is(31));
         assertThat(board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
@@ -275,9 +276,63 @@ public class BoardServiceImplTest {
 
         Board board = service.move(id, PitEnum.SIX);
 
-        assertThat(board.getWinner(), is(PlayerEnum.ONE));
+        assertThat(board.getWinner(), is(WinnerEnum.ONE));
         assertThat(board.getPlayerOne().getHouse().getStones(), is(51));
         assertThat(board.getPlayerTwo().getHouse().getStones(), is(26));
+        assertThat(board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
+        assertThat(board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
+    }
+
+    @Test
+    public void movePlayerOnePitSixDrawWithSuccess() {
+        Board boardMock = getBoard();
+        String id = boardMock.getId();
+
+        boardMock.getPlayerOne().getPits().forEach(p -> p.setStones(0));
+        boardMock.getPlayerTwo().getPits().forEach(p -> p.setStones(0));
+
+        boardMock.getPlayerOne().getPits().get(PitEnum.SIX.getPosition()).setStones(1);
+        boardMock.getPlayerTwo().getPits().get(PitEnum.THREE.getPosition()).setStones(1);
+
+        boardMock.getPlayerOne().getHouse().setStones(35);
+        boardMock.getPlayerTwo().getHouse().setStones(35);
+
+        when(repository.findById(id)).thenReturn(boardMock);
+
+        boardMock.setCurrentPlayer(PlayerEnum.ONE);
+
+        Board board = service.move(id, PitEnum.SIX);
+
+        assertThat(board.getWinner(), is(WinnerEnum.DRAW));
+        assertThat(board.getPlayerOne().getHouse().getStones(), is(36));
+        assertThat(board.getPlayerTwo().getHouse().getStones(), is(36));
+        assertThat(board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
+        assertThat(board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
+    }
+
+    @Test
+    public void movePlayerOnePitOneWinnerWithSuccess() {
+        Board boardMock = getBoard();
+        String id = boardMock.getId();
+
+        boardMock.getPlayerOne().getPits().forEach(p -> p.setStones(0));
+        boardMock.getPlayerTwo().getPits().forEach(p -> p.setStones(0));
+
+        boardMock.getPlayerOne().getPits().get(PitEnum.ONE.getPosition()).setStones(1);
+        boardMock.getPlayerTwo().getPits().get(PitEnum.SIX.getPosition()).setStones(1);
+
+        boardMock.getPlayerOne().getHouse().setStones(30);
+        boardMock.getPlayerTwo().getHouse().setStones(40);
+
+        when(repository.findById(id)).thenReturn(boardMock);
+
+        boardMock.setCurrentPlayer(PlayerEnum.ONE);
+
+        Board board = service.move(id, PitEnum.ONE);
+
+        assertThat(board.getWinner(), is(WinnerEnum.TWO));
+        assertThat(board.getPlayerOne().getHouse().getStones(), is(31));
+        assertThat(board.getPlayerTwo().getHouse().getStones(), is(41));
         assertThat(board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
         assertThat(board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum(), is(0));
     }
@@ -287,7 +342,7 @@ public class BoardServiceImplTest {
         Board boardMock = getBoard();
         String id = boardMock.getId();
 
-        boardMock.setWinner(PlayerEnum.ONE);
+        boardMock.setWinner(WinnerEnum.ONE);
 
         when(repository.findById(id)).thenReturn(boardMock);
 
