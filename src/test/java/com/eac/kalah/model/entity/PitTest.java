@@ -7,6 +7,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by eduardo on 22/10/16.
@@ -37,5 +38,13 @@ public class PitTest {
         assertThat(pitOne.getStones(), is(0));
         assertThat(pitTwo.getId(), is(PitEnum.TWO));
         assertThat(pitTwo.getStones(), is(7));
+    }
+
+    @Test
+    public void equalsAndHashCodeWithSuccess() throws Exception {
+        Pit pitOnePlayerOne = new Pit(PitEnum.ONE);
+        Pit pitOnePlayerTwo = new Pit(PitEnum.ONE);
+
+        assertTrue(pitOnePlayerOne.equals(pitOnePlayerTwo));
     }
 }
