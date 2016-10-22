@@ -17,13 +17,16 @@ Kalah Game provides REST services for create, update and search for boards allow
 
 Technologies
 ---
-Built using maven, java 8, spring-boot 1.4.1, spring-boot-actuator, spring-mvc and lombok. 
+Built on **maven**, **java 8**, spring-boot 1.4.1, spring-boot-actuator, spring-mvc and lombok. 
+
+>> Maven and Java 8 are required to run the project, be sure you have already installed.
 
 Travis CI (Continuous Integration)
 ---
 Using Travis as CI (https://travis-ci.org/eacarvalho/kalah-game)
 
-How start the project kalah-game
+How start the Kalah Game
+---
 1) Build:
 
 ```
