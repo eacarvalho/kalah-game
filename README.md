@@ -19,7 +19,7 @@ Technologies
 ---
 Built on **maven**, **java 8**, spring-boot 1.4.1, spring-boot-actuator, spring-mvc and lombok. 
 
->> Maven and Java 8 are required to run the project, be sure you have already installed.
+> Maven and Java 8 are required to run the project, be sure you have already installed.
 
 Travis CI (Continuous Integration)
 ---
