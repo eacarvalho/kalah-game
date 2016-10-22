@@ -50,21 +50,26 @@ How access the Kalah Game API (verbs and status)
 - POST    http://localhost:8080/api/boards
 > Create a new game board, allowing play the game (Http Status 200).
 
+- GET     http://localhost:8080/api/boards
+> Return the json of all boads saved (Http Status 200). If the there are no boards yeat the status code returned is 204.
+
 - GET     http://localhost:8080/api/boards/{boardId}
 > Return the JSON's board, a snapshot of that moment (Http Status 200). If the boardId doesn't exists the status code returned is 404.
 
 - PUT     http://localhost:8080/api/boards/{boardId}/pits/{pitId}
 > Move stones from the selected pit, as all movement are saved, the board has the snapshot of the last movement, so, it knows which player is and how many stones are in each pit and house (Http Status 200). If a pit has zero stone and you try to move the API will return status code 400.
 > The API has 6 spot for pits, so the call possibilities are:
-> http://localhost:8080/api/boards/{boardId}/pits/ONE
-> http://localhost:8080/api/boards/{boardId}/pits/TWO
-> http://localhost:8080/api/boards/{boardId}/pits/THREE
-> http://localhost:8080/api/boards/{boardId}/pits/FOUR
-> http://localhost:8080/api/boards/{boardId}/pits/FIVE
-> http://localhost:8080/api/boards/{boardId}/pits/SIX
+```
+http://localhost:8080/api/boards/{boardId}/pits/ONE
+http://localhost:8080/api/boards/{boardId}/pits/TWO
+http://localhost:8080/api/boards/{boardId}/pits/THREE
+http://localhost:8080/api/boards/{boardId}/pits/FOUR
+http://localhost:8080/api/boards/{boardId}/pits/FIVE
+http://localhost:8080/api/boards/{boardId}/pits/SIX
+```
 
 Sample JSON' Board:
-
+---
 ```
 {
   "id" : "d977a3e4-3aae-493d-b4aa-358fb2080e7e",
