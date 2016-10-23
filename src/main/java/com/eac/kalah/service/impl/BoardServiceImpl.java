@@ -65,36 +65,39 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board move(String boardId, PitEnum pitId) {
-        Board board = findById(boardId);
+        final Board board = this.findById(boardId);
+        final Player currentPlayer = this.getCurrentPlayer(board);
+        final Pit currentPit = currentPlayer.getPits().get(pitId.getPosition());
 
         this.validateMatch(board);
 
-        Player currentPlayer = getCurrentPlayer(board);
-        List<Pit> pits = currentPlayer.getPits();
-        Pit currentPit = pits.get(pitId.getPosition());
-        int stones = currentPit.getStones();
-        int position = currentPit.getId().getPosition() + ONE;
+        this.validatePit(currentPit);
 
-        this.validatePit(pitId, currentPit);
-
-        currentPit.setStones(ZERO);
-        board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer.getId()));
-
-        PlayerEnum playerCurrentRow = currentPlayer.getId();
-
-        while (stones > ZERO) {
-            stones = moveStones(position, stones, board, currentPlayer.getId(), playerCurrentRow);
-            position = ZERO;
-            playerCurrentRow = getOpponentPlayer(playerCurrentRow);
-        }
+        this.moveStone(board, currentPit, currentPlayer);
 
         this.verifyWinnerRule(board);
 
         return board;
     }
 
-    private int moveStones(int position, int stones, Board board, PlayerEnum currentPlayer, PlayerEnum currentPlayerRow) {
-        Player player = this.getCurrentPlayerRow(board, currentPlayerRow);
+    private void moveStone(final Board board, final Pit currentPit, final Player currentPlayer) {
+        int stones = currentPit.getStones();
+        int position = currentPit.getId().getPosition() + ONE;
+
+        currentPit.setStones(ZERO);
+        board.setCurrentPlayer(this.getOpponentPlayer(currentPlayer.getId()));
+
+        PlayerEnum currentPlayerSide = currentPlayer.getId();
+
+        while (stones > ZERO) {
+            stones = this.arrangeStones(position, stones, board, currentPlayer.getId(), currentPlayerSide);
+            position = ZERO;
+            currentPlayerSide = this.getOpponentPlayer(currentPlayerSide);
+        }
+    }
+
+    private int arrangeStones(int position, int stones, Board board, final PlayerEnum currentPlayer, final PlayerEnum currentPlayerSide) {
+        Player player = this.getCurrentPlayerSide(board, currentPlayerSide);
 
         for (int pitId = position; pitId < MAX_OF_PIT; pitId++) {
             if (stones > ZERO) {
@@ -103,16 +106,16 @@ public class BoardServiceImpl implements BoardService {
                 stones--;
 
                 if (this.isAnEmptyHouse(stones, currentPlayer, player, pit)) {
-                    this.emptyHouseRule(board, currentPlayer, pit.getId().getPosition());
+                    this.emptyPitRule(board, currentPlayer, pit.getId().getPosition());
                 }
             } else {
-                break;
+                return ZERO;
             }
         }
 
         if (stones > ZERO) {
-            House house = player.getHouse();
-            house.setStones(house.getStones() + ONE);
+            this.addStoneHouse(player, ONE);
+
             stones--;
 
             if (this.isAnExtraMove(stones, currentPlayer, player)) {
@@ -129,42 +132,42 @@ public class BoardServiceImpl implements BoardService {
      * @param board
      * @param currentPlayer
      */
-    private void extraMoveRule(Board board, PlayerEnum currentPlayer) {
+    private void extraMoveRule(final Board board, final PlayerEnum currentPlayer) {
         log.info("Extra move - " + currentPlayer.getDescription());
         board.setCurrentPlayer(currentPlayer);
     }
 
     /**
-     * The last seed falls in an empty house on the player's side. The player collects the highlighted seeds from both
-     * his house and the opposite house of his opponent and will move them to his store. The player's turn ends.
+     * The last seed falls in an empty pit on the player's side. The player collects the highlighted seeds from both
+     * his pit and the opposite pit of his opponent and will move them to his store. The player's turn ends.
      *
      * @param board
      * @param currentPlayer
      * @param position
      */
-    private void emptyHouseRule(Board board, PlayerEnum currentPlayer, int position) {
+    private void emptyPitRule(final Board board, final PlayerEnum currentPlayer, int position) {
         log.info("Empty house - " + currentPlayer.getDescription());
 
         Player player = null;
-        int stones = 0;
+        int opponentStones = 0;
         int oppositePosition = (MAX_OF_PIT - ONE) - position;
 
         if (currentPlayer == PlayerEnum.ONE) {
             List<Pit> pitsPlayerTwo = board.getPlayerTwo().getPits();
 
             player = board.getPlayerOne();
-            stones = pitsPlayerTwo.get(oppositePosition).getStones();
+            opponentStones = pitsPlayerTwo.get(oppositePosition).getStones();
             pitsPlayerTwo.get(oppositePosition).setStones(ZERO);
         } else {
             List<Pit> pitsPlayerOne = board.getPlayerOne().getPits();
 
             player = board.getPlayerTwo();
-            stones = pitsPlayerOne.get(oppositePosition).getStones();
+            opponentStones = pitsPlayerOne.get(oppositePosition).getStones();
             pitsPlayerOne.get(oppositePosition).setStones(ZERO);
         }
 
-        House house = player.getHouse();
-        house.setStones(house.getStones() + stones + ONE);
+        this.addStoneHouse(player, (opponentStones + ONE));
+
         player.getPits().get(position).setStones(ZERO);
     }
 
@@ -174,7 +177,7 @@ public class BoardServiceImpl implements BoardService {
      *
      * @param board
      */
-    private void verifyWinnerRule(Board board) {
+    private void verifyWinnerRule(final Board board) {
         int stonesPlayerOne = board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum();
         int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
 
@@ -182,15 +185,12 @@ public class BoardServiceImpl implements BoardService {
             board.getPlayerOne().getPits().forEach(pit -> pit.setStones(ZERO));
             board.getPlayerTwo().getPits().forEach(pit -> pit.setStones(ZERO));
 
-            House houseOne = board.getPlayerOne().getHouse();
-            houseOne.setStones(houseOne.getStones() + stonesPlayerOne);
+            this.addStoneHouse(board.getPlayerOne(), stonesPlayerOne);
+            this.addStoneHouse(board.getPlayerTwo(), stonesPlayerTwo);
 
-            House houseTwo = board.getPlayerTwo().getHouse();
-            houseTwo.setStones(houseTwo.getStones() + stonesPlayerTwo);
-
-            if (houseOne.getStones() > houseTwo.getStones()) {
+            if (board.getPlayerOne().getHouse().getStones() > board.getPlayerTwo().getHouse().getStones()) {
                 board.setWinner(WinnerEnum.ONE);
-            } else if (houseOne.getStones() < houseTwo.getStones()) {
+            } else if (board.getPlayerOne().getHouse().getStones() < board.getPlayerTwo().getHouse().getStones()) {
                 board.setWinner(WinnerEnum.TWO);
             } else {
                 board.setWinner(WinnerEnum.DRAW);
@@ -198,6 +198,11 @@ public class BoardServiceImpl implements BoardService {
 
             log.info("Winner - " + board.getWinner());
         }
+    }
+
+    private void addStoneHouse(final Player player, int stone) {
+        House house = player.getHouse();
+        house.setStones(house.getStones() + stone);
     }
 
     private boolean isAnExtraMove(int stones, PlayerEnum currentPlayer, Player player) {
@@ -212,23 +217,23 @@ public class BoardServiceImpl implements BoardService {
         return board.getCurrentPlayer() == PlayerEnum.ONE ? board.getPlayerOne() : board.getPlayerTwo();
     }
 
-    private Player getCurrentPlayerRow(final Board board, final PlayerEnum playerEnum) {
-        return board.getPlayerOne().getId() == playerEnum ? board.getPlayerOne() : board.getPlayerTwo();
+    private Player getCurrentPlayerSide(final Board board, final PlayerEnum currentPlayerSide) {
+        return board.getPlayerOne().getId() == currentPlayerSide ? board.getPlayerOne() : board.getPlayerTwo();
     }
 
     private PlayerEnum getOpponentPlayer(final PlayerEnum currentPlayer) {
         return currentPlayer == PlayerEnum.ONE ? PlayerEnum.TWO : PlayerEnum.ONE;
     }
 
-    private void validateMatch(Board board) {
+    private void validateMatch(final Board board) {
         if (board.getWinner() != null) {
             throw new BusinessException("This game has already a winner - " + board.getWinner());
         }
     }
 
-    private void validatePit(PitEnum pitId, Pit currentPit) {
+    private void validatePit(final Pit currentPit) {
         if (currentPit.getStones() == ZERO) {
-            throw new BusinessException("The pit " + pitId + " is already empty, try another pit");
+            throw new BusinessException("The pit " + currentPit.getId() + " is already empty, try another pit");
         }
     }
 }
