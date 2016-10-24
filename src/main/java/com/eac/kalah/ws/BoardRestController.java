@@ -25,7 +25,7 @@ public class BoardRestController {
     @Autowired
     private BoardService boardService;
 
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Board> create() {
         return ResponseEntity.ok().body(boardService.create());

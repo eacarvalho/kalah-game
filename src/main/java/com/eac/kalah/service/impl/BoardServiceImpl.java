@@ -1,5 +1,11 @@
 package com.eac.kalah.service.impl;
 
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.eac.kalah.exceptions.BusinessException;
 import com.eac.kalah.exceptions.ListNotFoundException;
 import com.eac.kalah.exceptions.ResourceNotFoundException;
@@ -12,12 +18,8 @@ import com.eac.kalah.model.entity.enums.PlayerEnum;
 import com.eac.kalah.model.entity.enums.WinnerEnum;
 import com.eac.kalah.model.repository.BoardRepository;
 import com.eac.kalah.service.BoardService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by eduardo on 19/10/16.
@@ -113,7 +115,7 @@ public class BoardServiceImpl implements BoardService {
             }
         }
 
-        if (stones > ZERO) {
+        if (this.isHouseRule(stones, currentPlayer, player)) {
             this.addStoneHouse(player, ONE);
 
             stones--;
@@ -203,6 +205,10 @@ public class BoardServiceImpl implements BoardService {
     private void addStoneHouse(final Player player, int stone) {
         House house = player.getHouse();
         house.setStones(house.getStones() + stone);
+    }
+
+    private boolean isHouseRule(int stones, PlayerEnum currentPlayer, Player player) {
+        return stones > ZERO && player.getId() == currentPlayer;
     }
 
     private boolean isAnExtraMove(int stones, PlayerEnum currentPlayer, Player player) {

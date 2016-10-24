@@ -23,6 +23,7 @@
         <apache.commons.version>3.4</apache.commons.version>
         <angularjs.version>1.4.9</angularjs.version>
         <bootstrap.version>3.3.6</bootstrap.version>
+        <guava.version>19.0</guava.version>
     </properties>
 
     <dependencies>
@@ -52,6 +53,13 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
     </dependencies>
 

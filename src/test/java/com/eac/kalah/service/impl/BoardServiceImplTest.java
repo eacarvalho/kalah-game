@@ -176,9 +176,9 @@ public class BoardServiceImplTest {
         Board boardMock = getBoard();
         String id = boardMock.getId();
 
-        boardMock.getPlayerTwo().getPits().get(PitEnum.ONE.getPosition()).setStones(0);
+        boardMock.getPlayerTwo().getPits().get(PitEnum.TWO.getPosition()).setStones(0);
         boardMock.getPlayerTwo().getPits().get(PitEnum.SIX.getPosition()).setStones(9);
-        boardMock.getPlayerOne().getPits().get(PitEnum.SIX.getPosition()).setStones(8);
+        boardMock.getPlayerOne().getPits().get(PitEnum.FIVE.getPosition()).setStones(8);
 
         boardMock.getPlayerOne().getHouse().setStones(5);
         boardMock.getPlayerTwo().getHouse().setStones(7);
@@ -191,15 +191,16 @@ public class BoardServiceImplTest {
 
         assertNull(board.getWinner());
         assertThat(board.getCurrentPlayer(), is(PlayerEnum.ONE));
-        assertThat(board.getPlayerOne().getHouse().getStones(), is(6));
+        assertThat(board.getPlayerOne().getHouse().getStones(), is(5));
         assertThat(board.getPlayerTwo().getHouse().getStones(), is(18));
-        assertThat(board.getPlayerOne().getPits().get(PitEnum.SIX.getPosition()).getStones(), is(0));
-        assertThat(board.getPlayerOne().getPits().get(PitEnum.FIVE.getPosition()).getStones(), is(7));
-        assertThat(board.getPlayerTwo().getPits().get(PitEnum.ONE.getPosition()).getStones(), is(0));
-        assertThat(board.getPlayerTwo().getPits().get(PitEnum.TWO.getPosition()).getStones(), is(6));
+        assertThat(board.getPlayerOne().getPits().get(PitEnum.SIX.getPosition()).getStones(), is(7));
+        assertThat(board.getPlayerOne().getPits().get(PitEnum.FIVE.getPosition()).getStones(), is(0));
+        assertThat(board.getPlayerTwo().getPits().get(PitEnum.ONE.getPosition()).getStones(), is(7));
+        assertThat(board.getPlayerTwo().getPits().get(PitEnum.TWO.getPosition()).getStones(), is(0));
+        assertThat(board.getPlayerTwo().getPits().get(PitEnum.THREE.getPosition()).getStones(), is(6));
         assertThat(board.getPlayerTwo().getPits().get(PitEnum.SIX.getPosition()).getStones(), is(0));
         assertThat(board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum(), is(35));
-        assertThat(board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum(), is(24));
+        assertThat(board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum(), is(25));
     }
 
     @Test
