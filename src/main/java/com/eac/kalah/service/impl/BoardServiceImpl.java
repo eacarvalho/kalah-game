@@ -128,25 +128,11 @@ public class BoardServiceImpl implements BoardService {
         return stones;
     }
 
-    /**
-     * The last seed falls in the store, so the player receives an extra move.
-     *
-     * @param board
-     * @param currentPlayer
-     */
     private void extraMoveRule(final Board board, final PlayerEnum currentPlayer) {
         log.info("Extra move - " + currentPlayer.getDescription());
         board.setCurrentPlayer(currentPlayer);
     }
 
-    /**
-     * The last seed falls in an empty pit on the player's side. The player collects the highlighted seeds from both
-     * his pit and the opposite pit of his opponent and will move them to his store. The player's turn ends.
-     *
-     * @param board
-     * @param currentPlayer
-     * @param position
-     */
     private void emptyPitRule(final Board board, final PlayerEnum currentPlayer, int position) {
         log.info("Empty house - " + currentPlayer.getDescription());
 
@@ -173,12 +159,6 @@ public class BoardServiceImpl implements BoardService {
         player.getPits().get(position).setStones(ZERO);
     }
 
-    /**
-     * When one player no longer has any seeds in any of their houses, the game ends. The other player moves all
-     * remaining seeds to their store, and the player with the most seeds in their store wins.
-     *
-     * @param board
-     */
     private void verifyWinnerRule(final Board board) {
         int stonesPlayerOne = board.getPlayerOne().getPits().stream().mapToInt(Pit::getStones).sum();
         int stonesPlayerTwo = board.getPlayerTwo().getPits().stream().mapToInt(Pit::getStones).sum();
