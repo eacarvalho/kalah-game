@@ -1,5 +1,6 @@
 package com.eac.kalah.ws;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -54,7 +54,7 @@ public class BoardRestControllerIntegrationTest {
     public void createNewBoardWithSuccess() throws Exception {
         mockMvc.perform(post("/api/boards")
                 .contentType(contentType))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.playerOne.pits[0].id").value("ONE"))
                 .andExpect(jsonPath("$.playerOne.pits[0].stones").value(6))
@@ -177,7 +177,7 @@ public class BoardRestControllerIntegrationTest {
 
         mockMvc.perform(put("/api/boards/" + newBoard.getId() + "/pits/FOUR").contentType(contentType)).andExpect(status().isOk());
         mockMvc.perform(put("/api/boards/" + newBoard.getId() + "/pits/TWO").contentType(contentType)).andExpect(status().isOk());
-        mockMvc.perform(put("/api/boards/" + newBoard.getId() + "/pits/FOUR").contentType(contentType)).andExpect(status().isBadRequest());
+        mockMvc.perform(put("/api/boards/" + newBoard.getId() + "/pits/FOUR").contentType(contentType)).andExpect(status().isBadRequest()).andExpect(jsonPath("$.errors").exists());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class BoardRestControllerIntegrationTest {
         final String jsonNewBoard = mockMvc.perform(post("/api/boards").contentType(contentType)).andDo(MockMvcResultHandlers.print()).andReturn().getResponse().getContentAsString();
         final Board newBoard = mapper.readValue(jsonNewBoard, Board.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/boards/" + newBoard.getId()))
+        mockMvc.perform(get("/api/boards/" + newBoard.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.playerOne.pits[0].id").value("ONE"))
@@ -219,18 +219,13 @@ public class BoardRestControllerIntegrationTest {
     }
 
     @Test
-    public void findAllBoardWithSuccess() throws Exception {
-        mockMvc.perform(post("/api/boards").contentType(contentType)).andDo(MockMvcResultHandlers.print()).andReturn().getResponse().getContentAsString();
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/boards"))
-                .andExpect(status().isOk())
-                .andDo(MockMvcResultHandlers.print());
+    public void boardNotFoundById() throws Exception {
+        mockMvc.perform(get("/api/boards/any-id")).andExpect(status().isNotFound()).andExpect(jsonPath("$.errors").exists()).andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    public void findAllBoardWithNoContent() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/boards"))
-                .andExpect(status().isNoContent())
-                .andDo(MockMvcResultHandlers.print());
+    public void findAllBoardWithSuccess() throws Exception {
+        mockMvc.perform(post("/api/boards").contentType(contentType)).andDo(MockMvcResultHandlers.print()).andReturn().getResponse().getContentAsString();
+        mockMvc.perform(get("/api/boards")).andExpect(status().isOk()).andDo(MockMvcResultHandlers.print());
     }
 }

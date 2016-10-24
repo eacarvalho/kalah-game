@@ -6,12 +6,4 @@ public class KalahException extends RuntimeException {
     public KalahException(String message) {
         super(message);
     }
-
-    public KalahException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public KalahException(Throwable cause) {
-        super(cause);
-    }
 }
