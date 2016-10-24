@@ -126,7 +126,7 @@ Sample JSON' Board:
   },
   "currentPlayer" : "ONE",
   "winner" : null,
-  "createdDate" : 1477163575713
+  "createdDate" : "2016-10-24T21:29:56.849+0000"
 }
 ```
 
