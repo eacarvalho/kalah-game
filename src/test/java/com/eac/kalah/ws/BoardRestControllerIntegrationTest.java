@@ -33,15 +33,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebAppConfiguration
 public class BoardRestControllerIntegrationTest {
 
-    MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
-
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
     private ObjectMapper mapper;
+
+    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype(),
+            Charset.forName("utf8"));
 
     private MockMvc mockMvc;
 

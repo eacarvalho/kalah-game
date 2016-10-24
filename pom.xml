@@ -23,7 +23,6 @@
         <apache.commons.version>3.4</apache.commons.version>
         <angularjs.version>1.4.9</angularjs.version>
         <bootstrap.version>3.3.6</bootstrap.version>
-        <guava.version>19.0</guava.version>
     </properties>
 
     <dependencies>
