@@ -2,4 +2,7 @@ server:
   port: 8080
 
 spring:
-  jackson.serialization.indent_output: true
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent_output: true
